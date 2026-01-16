@@ -1,0 +1,91 @@
+classdef RawSignals
+    % Raw Signals tab için tüm fonksiyonlar
+    
+    methods (Static)
+        
+        % Apply butonu
+        function apply(app)
+            try
+                profileStr = app.ProfileDropDown.Value;
+                
+                switch profileStr
+                    case 'Imaging'
+                        profile = WalabotAPI_NET.SCAN_PROFILE.PROF_SHORT_RANGE_IMAGING;
+                    case 'Sensor'
+                        profile = WalabotAPI_NET.SCAN_PROFILE.PROF_SENSOR;
+                    case 'Sensor-Narrow'
+                        profile = WalabotAPI_NET.SCAN_PROFILE.PROF_SENSOR_NARROW;
+                    case 'Wide Band'
+                        profile = WalabotAPI_NET.SCAN_PROFILE.PROF_WIDE_BAND_IMAGING;
+                end
+                
+                app.API.SetProfile(profile);
+                app.API.Start();
+                
+                uialert(app.UIFigure, ['Profil ayarlandı: ', profileStr], 'Başarılı');
+                
+            catch ME
+                uialert(app.UIFigure, ['Hata: ', ME.message], 'Profil Hatası');
+            end
+        end
+        
+        % Start/Stop toggle
+        function startStop(app, value)
+            if value % Başlat
+                try
+                    app.RawSignalTimer = timer('ExecutionMode', 'fixedRate', ...
+                                              'Period', 0.05, ...
+                                              'TimerFcn', @(~,~)RawSignals.update(app));
+                    start(app.RawSignalTimer);
+                catch ME
+                    uialert(app.UIFigure, ['Hata: ', ME.message], 'Başlatma Hatası');
+                    app.Start_RS.Value = false;
+                end
+            else % Durdur
+                WalabotUtils.stopTimer(app.RawSignalTimer);
+            end
+        end
+        
+        % Güncelleme fonksiyonu
+        function update(app)
+            try
+                app.API.Trigger();
+                
+                % Anten çiftini al
+                antennaPair = WalabotUtils.parseAntennaPair(app.Graph1DropDown.Value);
+                
+                % Raw signal al
+                signalData = app.API.GetRawSignal(antennaPair(1), antennaPair(2));
+                
+                % Zaman ekseni
+                numSamples = length(signalData);
+                samplingFreq = 100e6; % 100 MHz
+                timeAxis = (0:numSamples-1) / samplingFreq;
+                
+                % Grafik çiz
+                plot(app.UIAxesAmplitudeTime, timeAxis * 1e9, abs(signalData), 'b-', 'LineWidth', 1.5);
+                xlabel(app.UIAxesAmplitudeTime, 'Time [ns]');
+                ylabel(app.UIAxesAmplitudeTime, 'Amplitude');
+                title(app.UIAxesAmplitudeTime, sprintf('Amplitude / Time - Antenna %d → %d', ...
+                                           antennaPair(1), antennaPair(2)));
+                grid(app.UIAxesAmplitudeTime, 'on');
+                
+            catch ME
+                fprintf('Raw signal hatası: %s\n', ME.message);
+            end
+        end
+
+        function stop(app)
+            try
+                % Timer'ı durdur
+                WalabotUtils.stopTimer(app.RawSignalTimer);
+
+                app.API.Stop();
+
+                uialert(app.UIFigure, 'Raw Signal alımı durduruldu.', 'Bilgi');
+            catch ME
+                fprintf('RS Durdurma Hatası: %s\n', ME.message);
+            end
+        end        
+    end
+end
