@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Walabot Pipe Detection Flowchart</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 900px;
+            width: 100%;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 40px;
+            font-size: 14px;
+        }
+        
+        .flowchart {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .step {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 12px;
+            width: 80%;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            position: relative;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .step:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        }
+        
+        .step-number {
+            position: absolute;
+            left: -15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: white;
+            color: #667eea;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .step-title {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+        
+        .step-description {
+            font-size: 13px;
+            opacity: 0.95;
+            line-height: 1.5;
+        }
+        
+        .step-api {
+            font-family: 'Courier New', monospace;
+            background: rgba(255,255,255,0.2);
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin-top: 8px;
+            font-size: 12px;
+        }
+        
+        .arrow {
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 20px solid #667eea;
+            margin: -5px 0;
+        }
+        
+        .decision {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            padding: 30px 40px;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .decision .step-number {
+            color: #f5576c;
+        }
+        
+        .loop {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border: 3px dashed rgba(255,255,255,0.5);
+        }
+        
+        .loop .step-number {
+            color: #4facfe;
+        }
+        
+        .terminal {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            border-radius: 25px;
+        }
+        
+        .terminal .step-number {
+            color: #43e97b;
+        }
+        
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #ecf0f1;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+        
+        .legend-box {
+            width: 30px;
+            height: 20px;
+            border-radius: 5px;
+        }
+        
+        .legend-process {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .legend-decision {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        .legend-loop {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border: 2px dashed white;
+        }
+        
+        .legend-terminal {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .step {
+                width: 90%;
+                padding: 15px 20px;
+            }
+            
+            h1 {
+                font-size: 22px;
+            }
+            
+            .legend {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Walabot Pipe Detection System Flowchart</h1>
+        <p class="subtitle">Matlab Implementation for In-Wall Pipe Detection</p>
+        
+        <div class="flowchart">
+            <!-- Start -->
+            <div class="step terminal">
+                <div class="step-number">▶</div>
+                <div class="step-title">START: Initialize System</div>
+                <div class="step-description">
+                    Clear workspace, load libraries, set configuration parameters
+                </div>
+                <div class="step-api">clear all; close all; clc;</div>
+            </div>
+            
+            <div class="arrow"></div>
+            
+            <!-- Step 1 -->
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-title">Load Walabot API Assembly</div>
+                <div class="step-description">
+                    Import .NET assembly and create API instance
+                </div>
+                <div class="step-api">NET.addAssembly('WalabotAPI.NET.dll')</div>
+            </div>
+            
+            <div class="arrow"></div>
+            
+            <!-- Step 2 -->
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-title">Set Settings Folder</div>
+                <div class="step-description">
+                    Configure Walabot database location
+                </div>
+                <div class="step-api">API.SetSettingsFolder(path)</div>
+            </div>
+            
+            <div class="arrow"></div>
+            
+            <!-- Step 3 -->
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-title">Connect to Walabot Device</div>
+                <div class="step-description">
+                    Establish USB communication with Walabot hardware
+                </div>
+                <div class="step-api">API.ConnectAny()</div>
+            </div>
+            
+            <div class="arrow"></div>
+            
+            <!-- Step 4 -->
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-title">Set Scan Profile</div>
+                <div class="step-description">
+                    Configure SHORT_RANGE_IMAGING profile for wall penetration
+                </div>
+                <div class="step-api">API.SetProfile(PROF_SHORT_RANGE_IMAGING)</div>
+            </div>
+            
+            <div class="arrow"></div>
+            
+            <!-- Step 5 -->
+            <div class="step">
+                <div class="step-number">5</div>
+                <div class="step-title">Configure Arena (Scanning Volume)</div>
+                <div class="step-description">
+                    Set X, Y, Z ranges and resolutions in Cartesian coordinates
+                </div>
+                <div class="step-api">API.SetArenaX/Y/Z(min, max, resolution)</div>
+            </div>
+            
+            <div class="arrow"></div>
+            
+            <!-- Step 6 -->
+            <div class="step">
+                <div class="step-number">6</div>
+                <div class="step-title">Set Advanced Parameters</div>
+                <div class="step-description">
+                    Configure dielectric constant and sensitivity threshold
+                </div>
+                <div class="step-api">API.SetAdvancedParameter(), API.SetThreshold()</div>
+            </div>
+            
+            <div class="arrow"></div>
+            
+            <!-- Step 7 -->
+            <div class="step">
+                <div class="step-number">7</div>
+                <div class="step-title">Set Dynamic Filter</div>
+                <div class="step-description">
+                    Disable filtering for static pipe detection
+                </div>
+                <div class="step-api">API.SetDynamicImageFilter(FILTER_TYPE_NONE)</div>
+            </div>
+            
+            <div class="arrow"></div>
+            
+            <!-- Step 8 -->
+            <div class="step">
+                <div class="step-number">8</div>
+                <div class="step-title">Start Walabot System</div>
+                <div class="step-description">
+                    Prepare system for scanning operations
+                </div>
+                <div class="step-api">API.Start()</div>
+            </div>
+            
+            <div class="arrow"></div>
+            
+            <!-- Step 9 -->
+            <div class="step">
+                <div class="step-number">9</div>
+                <div class="step-title">Calibrate System</div>
+                <div class="step-description">
+                    Remove static background signals from wall surface
+                </div>
+                <div class="step-api">API.StartCalibration(), API.GetStatus()</div>
+            </div>
+            
+            <div class="arrow"></div>
+            
+            <!-- Decision -->
+            <div class="step decision">
+                <div class="step-number">?</div>
+                <div>
+                    <div class="step-title">Calibration Complete?</div>
+                    <div class="step-description">Wait for STATUS_SCANNING</div>
+                </div>
+            </div>
+            
+            <div class="arrow"></div>
+            
+            <!-- Main Loop Start -->
+            <div class="step loop">
+                <div class="step-number">↻</div>
+                <div class="step-title">MAIN DETECTION LOOP (Start)</div>
+                <div class="step-description">
+                    Continuous scanning for pipe detection
+                </div>
+            </div>
+            
+            <div class="arrow"></div>
+            
+            <!-- Step 10a -->
+            <div class="step loop">
+                <div class="step-number">10a</div>
+                <div class="step-title">Trigger Scan</div>
+                <div class="step-description">
+                    Initiate RF scan and record signals
+                </div>
+                <div class="step-api">API.Trigger()</div>
+            </div>
+            
+            <div class="arrow"></div>
+            
+            <!-- Step 10b -->
+            <div class="step loop">
+                <div class="step-number">10b</div>
+                <div class="step-title">Get Imaging Targets</div>
+                <div class="step-description">
+                    Retrieve detected pipes with position, type, and amplitude
+                </div>
+                <div class="step-api">targets = API.GetImagingTargets()</div>
+            </div>
+            
+            <div class="arrow"></div>
+            
+            <!-- Step 10c -->
+            <div class="step loop">
+                <div class="step-number">10c</div>
+                <div class="step-title">Get Raw Image Slice</div>
+                <div class="step-description">
+                    Obtain 2D projection for visualization
+                </div>
+                <div class="step-api">API.GetRawImageSlice()</div>
+            </div>
+            
+            <div class="arrow"></div>
+            
+            <!-- Step 10d -->
+            <div class="step loop">
+                <div class="step-number">10d</div>
+                <div class="step-title">Process & Display Results</div>
+                <div class="step-description">
+                    Show detected pipes, positions, and image visualization
+                </div>
+                <div class="step-api">Display target info and raw image</div>
+            </div>
+            
+            <div class="arrow"></div>
+            
+            <!-- Loop decision -->
+            <div class="step decision">
+                <div class="step-number">?</div>
+                <div>
+                    <div class="step-title">Continue Scanning?</div>
+                    <div class="step-description">Loop until user stops (Ctrl+C)</div>
+                </div>
+            </div>
+            
+            <div class="arrow"></div>
+            
+            <!-- Stop -->
+            <div class="step">
+                <div class="step-number">11</div>
+                <div class="step-title">Stop Walabot System</div>
+                <div class="step-description">
+                    Halt scanning operations
+                </div>
+                <div class="step-api">API.Stop()</div>
+            </div>
+            
+            <div class="arrow"></div>
+            
+            <!-- Disconnect -->
+            <div class="step">
+                <div class="step-number">12</div>
+                <div class="step-title">Disconnect Device</div>
+                <div class="step-description">
+                    Close USB communication
+                </div>
+                <div class="step-api">API.Disconnect()</div>
+            </div>
+            
+            <div class="arrow"></div>
+            
+            <!-- Cleanup -->
+            <div class="step">
+                <div class="step-number">13</div>
+                <div class="step-title">Cleanup API</div>
+                <div class="step-description">
+                    Release resources and clear API instance
+                </div>
+                <div class="step-api">API.Clean()</div>
+            </div>
+            
+            <div class="arrow"></div>
+            
+            <!-- End -->
+            <div class="step terminal">
+                <div class="step-number">■</div>
+                <div class="step-title">END: System Shutdown Complete</div>
+                <div class="step-description">
+                    All resources released, ready for next session
+                </div>
+            </div>
+        </div>
+        
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-box legend-process"></div>
+                <span>Process Step</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box legend-decision"></div>
+                <span>Decision Point</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box legend-loop"></div>
+                <span>Loop Iteration</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box legend-terminal"></div>
+                <span>Start/End</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
